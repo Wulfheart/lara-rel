@@ -5,6 +5,8 @@ namespace App;
 class documentation extends base
 {
     //
+    protected $dates = ['updated_at', 'created_at', 'finished_at', 'due_until'];
+    
     public function deadlines() {
         return $this->hasMany('App\deadline');
     }
