@@ -16,6 +16,7 @@ class CreateDocumentationsTable extends Migration
         Schema::create('documentations', function (Blueprint $table) {
             $table->id();
             $table->string('customer');
+            $table->integer('num');
             $table->timestamps();
         });
     }

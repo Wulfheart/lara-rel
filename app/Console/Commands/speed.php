@@ -41,50 +41,53 @@ class speed extends Command
     {
         //
         logger()->info(now() . ' TimeTest');
-        for ($i=0; $i < 20; $i++) {
+        $this->info(now());
+        \App\documentation::truncate();
+        \App\deadline::truncate();
+        for ($i=1; $i < 20; $i++) {
             $num = pow(2, $i);
             // Reset everything
-            \App\documentation::truncate();
-            \App\deadline::truncate();
             $this->info('Testing for ' . $num);
             logger()->info('Testing for ' . $num);
-            $seed_docs = $this->fn(function () use ($num) {
-                factory(\App\documentation::class, $num)->create();
+            $seed_docs = $this->fn(function () use ($num, $i) {
+                factory(\App\documentation::class, $num/2)->create([
+                    'num' => $i
+                ]);
             });
 
-            $docs = \App\documentation::all();
-            $bar = $this->output->createProgressBar(count($docs));
-            $seed_deadlines = $this->fn(function () use ($docs, $bar) {
+            $docs = \App\documentation::where('num', $i)->get();
+            // $bar = $this->output->createProgressBar(count($docs));
+            $seed_deadlines = $this->fn(function () use ($docs) {
                 foreach ($docs as $doc) {
                     factory(\App\deadline::class, rand(0, 5))->create([
                         'documentation_id' => $doc->id
                     ]);
-                    $bar->advance();
+                    // $bar->advance();
                 }
-                $bar->finish();
+                // $bar->finish();
             });
 
-            $first = now();
+            $first = microtime(true);
             $mem_bef = memory_get_usage();
             $data = DB::select('SELECT d.* FROM( SELECT MIN(due_until) AS di, documentation_id FROM deadlines GROUP BY documentation_id ORDER BY di ) AS X INNER JOIN documentations AS d ON d.id = x.documentation_id');
             $mem_after = memory_get_usage();
-            $second = now();
+            $second = microtime(true);
             $mem_data = $mem_after - $mem_bef;
-            $query_time = $this->td($first, $second);
+            $query_time = $second - $first;
 
-            $first = now();
+            $first = microtime(true);
             $mem_bef = memory_get_usage();
             $hyd = \App\documentation::hydrate($data);
             $mem_after = memory_get_usage();
-            $second = now();
+            $second = microtime(true);
             $mem_hyd = $mem_after - $mem_bef;
-            $hydration_time = $this->td($first, $second);
+            $hydration_time = $second - $first;
             $arr = [
                 ['Docs Seedtime', $seed_docs],
                 ['Deadlines Seedtime', $seed_deadlines],
-                ['Query Time', $query_time],
+                ['Query Time [in us]', $query_time],
                 ['Memory Query Data', $this->formatBytes($mem_data)],
-                ['Hydration Time', $hydration_time],
+                ['Hydration Time [in us]', $hydration_time],
                 ['Memory Hydrated Data', $this->formatBytes($mem_hyd)],
             ];
             logger('Results for ' . $num, $arr);
