@@ -40,9 +40,9 @@ class speed extends Command
     public function handle()
     {
         //
-        $num_docs = [10, 100, 500, 1000, 1500, 2000, 5000, 10000, 15000, 20000];
         logger()->info(now() . ' TimeTest');
-        foreach ($num_docs as  $num) {
+        for ($i=0; $i < 20; $i++) {
+            $num = pow(2, $i);
             // Reset everything
             \App\documentation::truncate();
             \App\deadline::truncate();
