@@ -85,9 +85,9 @@ class speed extends Command
             $arr = [
                 ['Docs Seedtime', $seed_docs],
                 ['Deadlines Seedtime', $seed_deadlines],
-                ['Query Time [in us]', $query_time],
+                ['Query Time [in ms]', $query_time],
                 ['Memory Query Data', $this->formatBytes($mem_data)],
-                ['Hydration Time [in us]', $hydration_time],
+                ['Hydration Time [in ms]', $hydration_time],
                 ['Memory Hydrated Data', $this->formatBytes($mem_hyd)],
             ];
             logger('Results for ' . $num, $arr);
