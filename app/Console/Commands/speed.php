@@ -44,7 +44,7 @@ class speed extends Command
         $this->info(now());
         \App\documentation::truncate();
         \App\deadline::truncate();
-        for ($i=1; $i < 20; $i++) {
+        for ($i=1; $i < 25; $i++) {
             $num = pow(2, $i);
             // Reset everything
             $this->info('Testing for ' . $num);
